@@ -8,7 +8,7 @@ body {
 
 /* Navbar */
 .navbar {
-  background-color: white !important;
+  background-color: Black !important;
 }
 
 .navbar-brand {
@@ -99,22 +99,4 @@ table {
 
 td, th {
   vertical-align: middle;
-}
-
-/* JSON Preview Box */
-#jsonOutput {
-  background-color: #1e1e1e;
-  color: #00ff9d;
-  padding: 20px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-/* Responsive Tweaks */
-@media (max-width: 768px) {
-  header h1 {
-    font-size: 2.2rem;
-  }
 }
