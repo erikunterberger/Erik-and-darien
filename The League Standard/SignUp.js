@@ -91,18 +91,20 @@ function setupForm() {
       submitBtn.textContent = "Add Fan";
       cancelEditBtn.classList.add("d-none");
       editIndex.value = -1;
+
+      saveMembers();
+      renderMembers();
+      form.reset();
+
+      const today = new Date().toISOString().split("T")[0];
+      signupDate.value = today;
     } else {
       // Add new entry
       members.push(memberData);
+      saveMembers();
+      localStorage.setItem("currentFan", JSON.stringify(memberData));
+      window.location.href = "billing.html";
     }
-
-    saveMembers();
-    renderMembers();
-    form.reset();
-
-    // Refill today's date after reset
-    const today = new Date().toISOString().split("T")[0];
-    signupDate.value = today;
   });
 
   cancelEditBtn.addEventListener("click", () => {
