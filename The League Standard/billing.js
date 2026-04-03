@@ -11,6 +11,13 @@ document.getElementById("billingForm").addEventListener("submit", function (e) {
 
   localStorage.setItem("billingInfo", JSON.stringify(billingInfo));
 
-  document.getElementById("message").textContent = "Subscription completed!";
-  this.reset();
+  const subscriptionData = {
+    status: "Active",
+    months: 1,
+    total: 10
+  };
+
+  localStorage.setItem("subscriptionData", JSON.stringify(subscriptionData));
+
+  window.location.href = "confirmation.html";
 });
