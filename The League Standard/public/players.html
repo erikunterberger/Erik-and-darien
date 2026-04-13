@@ -1,0 +1,179 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>League Standard – Player Management</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom CSS -->
+<link rel="stylesheet" href="players.css">
+
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" href="index.html">League Standard</a>
+    <div>
+      <a class="nav-link text-white" href="SignUp.html">Fan Signup</a>
+      <a class="nav-link text-white" href="Players.html">Player Management</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-5">
+
+  <h1 class="mb-4 text-center">Player Management</h1>
+
+  <!-- PLAYER FORM -->
+<form id="playerForm" class="card p-4 shadow">
+
+  <!-- Auto ID (read-only) -->
+  <div class="mb-3">
+    <label class="form-label">Player ID (Auto‑Generated)</label>
+    <input type="text" id="playerId" class="form-control" readonly>
+  </div>
+  
+  <div class="row mb-3">
+    <div class="col">
+      <label class="form-label">Player Name *</label>
+      <input type="text" id="playerName" class="form-control" required>
+    </div>
+
+    <div class="col">
+      <label class="form-label">Team *</label>
+      <select id="playerTeam" class="form-select" required>
+        <option value="">Select Team</option>
+        <option>Atlanta Hawks</option>
+        <option>Boston Celtics</option>
+        <option>Brooklyn Nets</option>
+        <option>Charlotte Hornets</option>
+        <option>Chicago Bulls</option>
+        <option>Cleveland Cavaliers</option>
+        <option>Dallas Mavericks</option>
+        <option>Denver Nuggets</option>
+        <option>Detroit Pistons</option>
+        <option>Golden State Warriors</option>
+        <option>Houston Rockets</option>
+        <option>Indiana Pacers</option>
+        <option>LA Clippers</option>
+        <option>Los Angeles Lakers</option>
+        <option>Memphis Grizzlies</option>
+        <option>Miami Heat</option>
+        <option>Milwaukee Bucks</option>
+        <option>Minnesota Timberwolves</option>
+        <option>New Orleans Pelicans</option>
+        <option>New York Knicks</option>
+        <option>Oklahoma City Thunder</option>
+        <option>Orlando Magic</option>
+        <option>Philadelphia 76ers</option>
+        <option>Phoenix Suns</option>
+        <option>Portland Trail Blazers</option>
+        <option>Sacramento Kings</option>
+        <option>San Antonio Spurs</option>
+        <option>Toronto Raptors</option>
+        <option>Utah Jazz</option>
+        <option>Washington Wizards</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col">
+      <label class="form-label">Position *</label>
+      <select id="playerPosition" class="form-select" required>
+        <option value="">Select Position</option>
+        <option>Point Guard</option>
+        <option>Shooting Guard</option>
+        <option>Small Forward</option>
+        <option>Power Forward</option>
+        <option>Center</option>
+      </select>
+    </div>
+
+    <div class="col">
+      <label class="form-label">Years in NBA *</label>
+      <input type="number" id="playerYears" class="form-control" required>
+    </div>
+  </div>
+
+  <!-- Height -->
+  <div class="row mb-3">
+    <div class="col">
+      <label class="form-label">Height (Feet) *</label>
+      <input type="number" id="playerHeightFeet" class="form-control" required>
+    </div>
+    <div class="col">
+      <label class="form-label">Height (Inches) *</label>
+      <input type="number" id="playerHeightInches" class="form-control" required>
+    </div>
+  </div>
+
+  <!-- Weight -->
+  <div class="mb-3">
+    <label class="form-label">Weight (lbs) *</label>
+    <input type="number" id="playerWeight" class="form-control" required>
+  </div>
+
+  <!-- College -->
+  <div class="mb-3">
+    <label class="form-label">College (Optional)</label>
+    <input type="text" id="playerCollege" class="form-control">
+  </div>
+
+  <!-- Player Photo -->
+  <div class="mb-3">
+    <label class="form-label">Player Photo (Optional)</label>
+    <input type="file" id="playerPhoto" class="form-control" accept="image/*">
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Player Value (Rating) *</label>
+    <input type="number" id="playerValue" class="form-control" required>
+  </div>
+
+  <button type="submit" class="btn btn-primary w-100">Add / Update Player</button>
+</form>
+
+  <!-- SEARCH BAR -->
+  <div class="mt-4">
+    <input type="text" id="searchInput" class="form-control" placeholder="Search players by name, team, or position...">
+  </div>
+
+  <!-- PLAYER TABLE -->
+  <table class="table table-striped mt-4" id="playerTable">
+    <thead class="table-dark">
+      <tr>
+        <th> </th>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Team</th>
+        <th>Position</th>
+        <th>Height</th>
+        <th>Weight</th>
+        <th>Years Played</th>
+        <th>College</th>
+        <th>Rating</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- JSON PREVIEW -->
+  <h4 class="mt-4">JSON Data</h4>
+  <pre id="jsonOutput"></pre>
+
+</div>
+
+<!-- JS -->
+<script src="players.js"></script>
+
+</body>
+</html>
