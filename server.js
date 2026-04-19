@@ -8,6 +8,7 @@ const CartItem = require("./models/CartItem");
 const Billing = require("./models/billing");
 const Shipping = require("./models/shipping");
 const ReturnRequest = require("./models/returns");
+const Shopper = require("./models/shopper");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -37,6 +38,20 @@ app.get("/api/products", async (req, res) => {
   }
 });
 
+app.get("/api/products/:id", async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found." });
+    }
+
+    res.json(product);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to get product." });
+  }
+});
+
 app.post("/api/products", async (req, res) => {
   try {
     const product = new Product(req.body);
@@ -47,8 +62,51 @@ app.post("/api/products", async (req, res) => {
   }
 });
 
+app.put("/api/products/:id", async (req, res) => {
+  try {
+    const updated = await Product.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true
+    });
+
+    if (!updated) {
+      return res.status(404).json({ message: "Product not found." });
+    }
+
+    res.json(updated);
+  } catch (err) {
+    res.status(400).json({ message: "Failed to update product." });
+  }
+});
+
+app.delete("/api/products/:id", async (req, res) => {
+  try {
+    const deleted = await Product.findByIdAndDelete(req.params.id);
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Product not found." });
+    }
+
+    res.json({ message: "Product deleted." });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete product." });
+  }
+});
+
 /* =========================
-   CART / FAN SIGNUP
+   SHOPPERS
+========================= */
+app.get("/api/shoppers", async (req, res) => {
+  try {
+    const shoppers = await Shopper.find().sort({ createdAt: -1 });
+    res.json(shoppers);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to get shoppers." });
+  }
+});
+
+/* =========================
+   CART / SIGNUP
 ========================= */
 app.get("/api/cart", async (req, res) => {
   try {
@@ -75,14 +133,24 @@ app.post("/api/cart", async (req, res) => {
   try {
     const newItem = new CartItem({
       ...req.body,
-      productName: "League Standard Magazine Subscription",
-      quantity: 1,
-      months: 1,
-      total: 10,
+      productName: req.body.productName || "League Standard Magazine Subscription",
+      quantity: Number(req.body.quantity) || 1,
+      months: Number(req.body.months) || 1,
+      total: Number(req.body.total) || 10,
       status: "Pending"
     });
 
     await newItem.save();
+
+    const shopper = new Shopper({
+      fullName: newItem.fullName,
+      email: newItem.email,
+      phone: newItem.phone,
+      favoriteTeam: newItem.favoriteTeam
+    });
+
+    await shopper.save();
+
     res.status(201).json(newItem);
   } catch (err) {
     res.status(400).json({ message: "Failed to create cart item." });
@@ -176,6 +244,20 @@ app.get("/api/returns", async (req, res) => {
   }
 });
 
+app.get("/api/returns/:id", async (req, res) => {
+  try {
+    const returnRequest = await ReturnRequest.findById(req.params.id);
+
+    if (!returnRequest) {
+      return res.status(404).json({ message: "Return record not found." });
+    }
+
+    res.json(returnRequest);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to get return record." });
+  }
+});
+
 app.post("/api/returns", async (req, res) => {
   try {
     const returnRequest = new ReturnRequest(req.body);
@@ -183,6 +265,37 @@ app.post("/api/returns", async (req, res) => {
     res.status(201).json(returnRequest);
   } catch (err) {
     res.status(400).json({ message: "Failed to create return record." });
+  }
+});
+
+app.put("/api/returns/:id", async (req, res) => {
+  try {
+    const updated = await ReturnRequest.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true
+    });
+
+    if (!updated) {
+      return res.status(404).json({ message: "Return record not found." });
+    }
+
+    res.json(updated);
+  } catch (err) {
+    res.status(400).json({ message: "Failed to update return record." });
+  }
+});
+
+app.delete("/api/returns/:id", async (req, res) => {
+  try {
+    const deleted = await ReturnRequest.findByIdAndDelete(req.params.id);
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Return record not found." });
+    }
+
+    res.json({ message: "Return record deleted." });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete return record." });
   }
 });
 
@@ -207,7 +320,7 @@ app.put("/api/subscription/:id/activate", async (req, res) => {
   try {
     const updated = await CartItem.findByIdAndUpdate(
       req.params.id,
-      { status: "Active", months: 1, total: 10 },
+      { status: "Active" },
       { new: true }
     );
 
@@ -230,6 +343,7 @@ app.put("/api/subscription/:id/add-months", async (req, res) => {
     }
 
     const current = await CartItem.findById(req.params.id);
+
     if (!current) {
       return res.status(404).json({ message: "Subscription not found." });
     }

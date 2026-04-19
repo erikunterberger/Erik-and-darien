@@ -49,7 +49,7 @@ const cartItemSchema = new mongoose.Schema(
       default: "Pending"
     }
   },
-  { timestamps: true }
+  { timestamps: true, collection: "shopping_cart" }
 );
 
 module.exports = mongoose.model("CartItem", cartItemSchema);

@@ -14,9 +14,13 @@ const returnSchema = new mongoose.Schema(
     date: {
       type: String,
       required: true
+    },
+    status: {
+      type: String,
+      default: "Submitted"
     }
   },
-  { timestamps: true }
+  { timestamps: true, collection: "returns" }
 );
 
 module.exports = mongoose.model("ReturnRequest", returnSchema);

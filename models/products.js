@@ -15,9 +15,22 @@ const productSchema = new mongoose.Schema(
     description: {
       type: String,
       default: ""
+    },
+    category: {
+      type: String,
+      default: "Magazine"
+    },
+    stock: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
+    imageUrl: {
+      type: String,
+      default: ""
     }
   },
-  { timestamps: true }
+  { timestamps: true, collection: "products" }
 );
 
 module.exports = mongoose.model("Product", productSchema);

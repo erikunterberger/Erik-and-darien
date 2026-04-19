@@ -1,160 +1,158 @@
-const playerId = document.getElementById("playerId");
-const playerName = document.getElementById("playerName");
-const playerTeam = document.getElementById("playerTeam");
-const playerPosition = document.getElementById("playerPosition");
-const playerYears = document.getElementById("playerYears");
-const playerWeight = document.getElementById("playerWeight");
-const playerCollege = document.getElementById("playerCollege");
-const playerValue = document.getElementById("playerValue");
-const playerHeightFeet = document.getElementById("playerHeightFeet");
-const playerHeightInches = document.getElementById("playerHeightInches");
-const playerPhoto = document.getElementById("playerPhoto");
-const playerInfo = document.getElementById("playerInfo");
+let products = [];
+let filteredProducts = [];
 
-let players = JSON.parse(localStorage.getItem("players")) || [];
-let editIndex = -1;
+const productForm = document.getElementById("productForm");
+const productId = document.getElementById("productId");
+const productName = document.getElementById("productName");
+const productPrice = document.getElementById("productPrice");
+const productStock = document.getElementById("productStock");
+const productCategory = document.getElementById("productCategory");
+const productImageUrl = document.getElementById("productImageUrl");
+const productDescription = document.getElementById("productDescription");
+const submitBtn = document.getElementById("submitBtn");
+const cancelEditBtn = document.getElementById("cancelEditBtn");
 
-// Auto-generate ID
-function generateId() {
-  return "PLR-" + String(players.length + 1).padStart(3, "0");
+document.addEventListener("DOMContentLoaded", () => {
+  loadProducts();
+});
+
+async function loadProducts() {
+  try {
+    const response = await fetch("/api/products");
+    products = await response.json();
+    filteredProducts = [...products];
+    renderTable(filteredProducts);
+  } catch (error) {
+    console.error("Failed to load products:", error);
+  }
 }
 
-// Convert image to Base64
-function convertImage(file, callback) {
-  if (!file) return callback("");
-  const reader = new FileReader();
-  reader.onload = () => callback(reader.result);
-  reader.readAsDataURL(file);
-}
+function renderTable(list) {
+  const tbody = document.querySelector("#productTable tbody");
+  const jsonOutput = document.getElementById("jsonOutput");
 
-function renderTable() {
-  const tbody = document.querySelector("#playerTable tbody");
   tbody.innerHTML = "";
 
-  players.forEach((p, index) => {
-    tbody.innerHTML += `
-      <tr>
-        <td><img src="${p.photo}" width="50" height="50" style="object-fit:cover;border-radius:6px;"></td>
-        <td>${p.id}</td>
-        <td>${p.name}</td>
-        <td>${p.team}</td>
-        <td>${p.position}</td>
-        <td>${p.heightFeet}' ${p.heightInches}"</td>
-        <td>${p.weight}</td>
-        <td>${p.years}</td>
-        <td>${p.college}</td>
-        <td>${p.value}</td>
-        <td>
-          <button class="btn btn-warning btn-sm" onclick="editPlayer(${index})">Edit</button>
-          <button class="btn btn-danger btn-sm" onclick="deletePlayer(${index})">Delete</button>
-        </td>
-      </tr>
+  list.forEach((product) => {
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td>${product.name || ""}</td>
+      <td>$${Number(product.price || 0).toFixed(2)}</td>
+      <td>${product.category || ""}</td>
+      <td>${product.stock ?? 0}</td>
+      <td>${product.description || ""}</td>
+      <td>
+        <button class="btn btn-warning btn-sm me-2" onclick="editProduct('${product._id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteProduct('${product._id}')">Delete</button>
+      </td>
     `;
+
+    tbody.appendChild(row);
   });
 
-  document.getElementById("jsonOutput").textContent = JSON.stringify(players, null, 2);
-  localStorage.setItem("players", JSON.stringify(players));
+  jsonOutput.textContent = JSON.stringify(list, null, 2);
 }
 
-document.getElementById("playerForm").addEventListener("submit", function (e) {
+productForm.addEventListener("submit", async function (e) {
   e.preventDefault();
 
-  const id = editIndex === -1 ? generateId() : players[editIndex].id;
-  const name = playerName.value.trim();
-  const team = playerTeam.value;
-  const position = playerPosition.value;
-  const years = playerYears.value;
-  const weight = playerWeight.value;
-  const college = playerCollege.value.trim();
-  const value = playerValue.value;
+  const payload = {
+    name: productName.value.trim(),
+    price: Number(productPrice.value),
+    stock: Number(productStock.value),
+    category: productCategory.value.trim() || "Magazine",
+    imageUrl: productImageUrl.value.trim(),
+    description: productDescription.value.trim()
+  };
 
-  const heightFeet = parseInt(playerHeightFeet.value);
-  const heightInches = parseInt(playerHeightInches.value);
-  const totalHeight = heightFeet * 12 + heightInches;
-
-  const photoFile = playerPhoto.files[0];
-
-  if (!name || !team || !position || !years || !weight || !value) {
-    alert("Please fill in all required fields.");
-    return;
-  }
-
-  convertImage(photoFile, (photoBase64) => {
-    const playerData = {
-      id,
-      name,
-      team,
-      position,
-      years,
-      weight,
-      college,
-      value,
-      heightFeet,
-      heightInches,
-      totalHeight,
-      photo: photoBase64 || (editIndex !== -1 ? players[editIndex].photo : "")
-    };
-
-    if (editIndex === -1) {
-      players.push(playerData);
+  try {
+    if (productId.value) {
+      await fetch(`/api/products/${productId.value}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
     } else {
-      players[editIndex] = playerData;
-      editIndex = -1;
+      await fetch("/api/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
     }
 
-    this.reset();
-    playerId.value = generateId();
-    renderTable();
-  });
+    resetForm();
+    await loadProducts();
+  } catch (error) {
+    alert("Error saving product.");
+    console.error(error);
+  }
 });
 
-// Edit
-function editPlayer(index) {
-  const p = players[index];
+function editProduct(id) {
+  const product = products.find((p) => p._id === id);
+  if (!product) return;
 
-  playerId.value = p.id;
-  playerName.value = p.name;
-  playerTeam.value = p.team;
-  playerPosition.value = p.position;
-  playerYears.value = p.years;
-  playerWeight.value = p.weight;
-  playerCollege.value = p.college;
-  playerValue.value = p.value;
-  playerHeightFeet.value = p.heightFeet;
-  playerHeightInches.value = p.heightInches;
+  productId.value = product._id;
+  productName.value = product.name || "";
+  productPrice.value = product.price || "";
+  productStock.value = product.stock || 0;
+  productCategory.value = product.category || "Magazine";
+  productImageUrl.value = product.imageUrl || "";
+  productDescription.value = product.description || "";
 
-  editIndex = index;
+  submitBtn.textContent = "Update Product";
 }
 
-// Delete
-function deletePlayer(index) {
-  players.splice(index, 1);
-  renderTable();
+async function deleteProduct(id) {
+  if (!confirm("Delete this product?")) return;
+
+  try {
+    await fetch(`/api/products/${id}`, {
+      method: "DELETE"
+    });
+
+    await loadProducts();
+  } catch (error) {
+    alert("Error deleting product.");
+    console.error(error);
+  }
 }
 
-// jQuery Search
+function resetForm() {
+  productForm.reset();
+  productId.value = "";
+  productCategory.value = "Magazine";
+  submitBtn.textContent = "Add Product";
+}
+
+cancelEditBtn.addEventListener("click", resetForm);
+
 $("#searchInput").on("keyup", function () {
-  let value = $(this).val().toLowerCase();
-  $("#playerTable tbody tr").filter(function () {
-    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+  const value = $(this).val().toLowerCase();
+
+  filteredProducts = products.filter((product) => {
+    return (
+      String(product.name || "").toLowerCase().includes(value) ||
+      String(product.category || "").toLowerCase().includes(value) ||
+      String(product.description || "").toLowerCase().includes(value)
+    );
   });
+
+  renderTable(filteredProducts);
 });
 
-// Sorting
 $("#sortSelect").on("change", function () {
   const sortType = $(this).val();
+  const copy = [...filteredProducts];
 
   if (sortType === "name") {
-    players.sort((a, b) => a.name.localeCompare(b.name));
-  } else if (sortType === "team") {
-    players.sort((a, b) => a.team.localeCompare(b.team));
-  } else if (sortType === "value") {
-    players.sort((a, b) => b.value - a.value);
+    copy.sort((a, b) => a.name.localeCompare(b.name));
+  } else if (sortType === "priceLow") {
+    copy.sort((a, b) => a.price - b.price);
+  } else if (sortType === "priceHigh") {
+    copy.sort((a, b) => b.price - a.price);
   }
 
-  renderTable();
+  renderTable(copy);
 });
-
-// Initialize
-playerId.value = generateId();
-renderTable();
