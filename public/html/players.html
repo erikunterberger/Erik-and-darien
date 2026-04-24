@@ -8,7 +8,7 @@
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <!-- Your CSS -->
+    <!-- CSS -->
     <link rel="stylesheet" href="../css/players.css">
 </head>
 
@@ -16,7 +16,7 @@
 
 <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-black px-4">
-    <a class="navbar-brand text-white fw-bold" href="#">League Standard</a>
+    <a class="navbar-brand text-white fw-bold" href="/">League Standard</a>
 
     <div class="ms-auto">
         <a class="nav-link d-inline text-white" href="/">Home</a>
@@ -28,13 +28,13 @@
     </div>
 </nav>
 
-<!-- BLUE HEADER (MATCHES SIGNUP) -->
+<!-- BLUE HEADER -->
 <div class="page-hero">
     <h1>Product Management</h1>
     <p>Manage magazine content and league updates.</p>
 </div>
 
-<!-- FORM SECTION -->
+<!-- MAIN -->
 <div class="container page-section">
 
     <h2 class="mb-4">Add / Edit Product</h2>
@@ -42,6 +42,9 @@
     <div class="card p-4 shadow-sm">
 
         <form id="productForm">
+
+            <!-- hidden id for editing -->
+            <input type="hidden" id="productId">
 
             <div class="mb-3">
                 <label class="form-label">Product Name *</label>
@@ -51,43 +54,61 @@
             <div class="row">
                 <div class="col-md-6">
                     <label class="form-label">Price *</label>
-                    <input id="price" class="form-control" required>
+                    <input id="productPrice" class="form-control" required>
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">Stock *</label>
-                    <input id="stock" class="form-control" required>
+                    <input id="productStock" class="form-control" required>
                 </div>
             </div>
 
             <div class="mb-3 mt-3">
                 <label class="form-label">Category</label>
-                <input id="category" class="form-control">
+                <input id="productCategory" class="form-control">
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Image URL</label>
-                <input id="image" class="form-control">
+                <input id="productImageUrl" class="form-control">
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Description</label>
-                <textarea id="description" class="form-control"></textarea>
+                <textarea id="productDescription" class="form-control"></textarea>
             </div>
 
-            <button type="submit" id="addProductBtn" class="btn btn-primary w-100">
-                Save Product
+            <button type="submit" class="btn btn-primary w-100 mb-2" id="submitBtn">
+                Add Product
+            </button>
+
+            <button type="button" class="btn btn-secondary w-100" id="cancelEditBtn">
+                Cancel Edit
             </button>
 
         </form>
+    </div>
 
+    <!-- SEARCH + SORT -->
+    <div class="mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                <input id="searchInput" class="form-control" placeholder="Search products...">
+            </div>
+
+            <div class="col-md-6">
+                <select id="sortSelect" class="form-select">
+                    <option value="">Sort By</option>
+                    <option value="price">Price</option>
+                    <option value="name">Name</option>
+                </select>
+            </div>
+        </div>
     </div>
 
     <!-- TABLE -->
-    <div class="mt-5">
-        <h3>Products</h3>
-
-        <table class="table table-bordered mt-3">
+    <div class="mt-4">
+        <table class="table table-bordered">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -102,9 +123,15 @@
         </table>
     </div>
 
+    <!-- JSON OUTPUT -->
+    <div class="mt-4">
+        <h4>JSON Output</h4>
+        <pre id="jsonOutput"></pre>
+    </div>
+
 </div>
 
-<!-- JS (DO NOT REMOVE OR IT BREAKS EVERYTHING) -->
+<!-- JS -->
 <script src="../js/players.js"></script>
 
 </body>
