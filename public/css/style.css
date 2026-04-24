@@ -1,16 +1,34 @@
 body {
     background-color: #f5f5f5;
-    font-family: Arial, sans-serif;
 }
 
-h1 {
+/* HERO */
+.hero {
+    background: linear-gradient(to right, #0d47a1, #1976d2);
+    padding: 80px 20px;
+}
+
+.hero h1 {
+    font-size: 48px;
     font-weight: bold;
 }
 
-.card {
+/* FEATURED STORY */
+.featured-story {
+    background: white;
+    padding: 30px;
     border-radius: 10px;
+    box-shadow: 0px 3px 10px rgba(0,0,0,0.1);
 }
 
-footer {
-    color: gray;
+/* NEWS CARDS */
+.news-card {
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: 0.3s;
+}
+
+.news-card:hover {
+    transform: scale(1.03);
 }
